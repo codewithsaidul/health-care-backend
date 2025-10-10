@@ -2,7 +2,8 @@ import cors from "cors";
 import express, { Application, Request, Response } from "express";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
-import config from "./config/env";
+import { envVars } from "./config/env";
+
 
 const app: Application = express();
 app.use(
@@ -19,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req: Request, res: Response) => {
   res.send({
     message: "Server is running..",
-    environment: config.node_env,
+    environment: envVars.NODE_ENV,
     uptime: process.uptime().toFixed(2) + " sec",
     timeStamp: new Date().toISOString(),
   });
