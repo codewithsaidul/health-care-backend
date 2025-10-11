@@ -8,7 +8,6 @@ import bcrypt from "bcryptjs";
 export const UserServices = {
     createPatient: async (payload: createPatientInput) => {
         const hashPassword = await bcrypt.hash(payload.password, 10)
-       
 
         const result = await prisma.$transaction(async (tnx) => {
             await tnx.user.create({

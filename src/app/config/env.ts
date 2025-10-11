@@ -12,11 +12,11 @@ interface ENVCONFIG {
   //   JWT_REFRESH_EXPIRATION_TIME: string;
   // };
 
-  // CLOUDINARY: {
-  //   CLOUDINARY_CLOUD_NAME: string;
-  //   CLOUDINARY_API_KEY: string;
-  //   CLOUDINARY_API_SECRET: string;
-  // };
+  CLOUDINARY: {
+    CLOUDINARY_CLOUD_NAME: string;
+    CLOUDINARY_API_KEY: string;
+    CLOUDINARY_API_SECRET: string;
+  };
 
   // BCRYPT_SALT_ROUND: string;
   // ADMIN_EMAIL: string;
@@ -34,9 +34,10 @@ const loadEnvVariable = (): ENVCONFIG => {
     // "JWT_REFRESH_SECRET",
     // "JWT_REFRESH_EXPIRATION_TIME",
 
-    // "CLOUDINARY_CLOUD_NAME",
-    // "CLOUDINARY_API_KEY",
-    // "CLOUDINARY_API_SECRET",
+    "CLOUDINARY_CLOUD_NAME",
+    "CLOUDINARY_API_KEY",
+    "CLOUDINARY_API_SECRET",
+    "CLOUDINARY_URL",
 
     // "BCRYPT_SALT_ROUND",
     // "ADMIN_EMAIL",
@@ -61,11 +62,11 @@ const loadEnvVariable = (): ENVCONFIG => {
     //   JWT_REFRESH_EXPIRATION_TIME: process.env
     //     .JWT_REFRESH_EXPIRATION_TIME as string,
     // },
-    // CLOUDINARY: {
-    //   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
-    //   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
-    //   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
-    // },
+    CLOUDINARY: {
+      CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
+      CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+      CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+    },
     // BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
     // ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
     // ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
