@@ -1,10 +1,12 @@
+export type ICreatePatientInput = {
+  password: string;
+  patient: ICreatePatient
+};
 
-
-
-export type createPatientInput = {
-    name: string;
-    email: string;
-    password: string;
-    address: string;
-    contactNumber: string
+export interface ICreatePatient {
+  name: string;
+  email: string;
+  address: string;
+  contactNumber: string;
+  profilePhoto?: string
 }
