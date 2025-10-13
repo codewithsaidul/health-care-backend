@@ -15,20 +15,19 @@ export const UserServices = {
     const hashPassword = await bcrypt.hash(payload.password, 10);
 
     const result = await prisma.$transaction(async (tnx) => {
-       const { email, ...patientData } = payload.patient; 
 
       await tnx.user.create({
         data: {
-          email: email,
+          email: payload.email,
           password: hashPassword,
         },
       });
 
       return await tnx.patient.create({
         data: {
-          ...patientData,
+          ...payload.patient,
           user: {
-            connect: { email: email}
+            connect: { email: payload.email}
           }
         },
       });
