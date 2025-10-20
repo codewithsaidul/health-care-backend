@@ -3,6 +3,8 @@ import { addMinutes, addHours, format } from "date-fns";
 import { IOptions, paginationHelper } from "../../utils/paginationHelper";
 import { Prisma } from "@prisma/client";
 import { IJWTPayload } from "../../types/common.types";
+import { AppError } from "../../errorHelper/AppError";
+import { StatusCodes } from "http-status-codes";
 
 export const ScheduleServices = {
   createSchedule: async (payload: any) => {
@@ -70,78 +72,99 @@ export const ScheduleServices = {
     user: IJWTPayload,
     fillters: any,
     options: IOptions
-) => {
-    const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(options);
-    const { startDateTime: filterStartDateTime, endDateTime: filterEndDateTime } = fillters;
+  ) => {
+    const { page, limit, skip, sortBy, sortOrder } =
+      paginationHelper.calculatePagination(options);
+    const {
+      startDateTime: filterStartDateTime,
+      endDateTime: filterEndDateTime,
+    } = fillters;
 
     const andConditions: Prisma.ScheduleWhereInput[] = [];
 
     if (filterStartDateTime && filterEndDateTime) {
-        andConditions.push({
-            AND: [
-                {
-                    startDateTime: {
-                        gte: filterStartDateTime
-                    }
-                },
-                {
-                    endDateTime: {
-                        lte: filterEndDateTime
-                    }
-                }
-            ]
-        })
+      andConditions.push({
+        AND: [
+          {
+            startDateTime: {
+              gte: filterStartDateTime,
+            },
+          },
+          {
+            endDateTime: {
+              lte: filterEndDateTime,
+            },
+          },
+        ],
+      });
     }
 
-    const whereConditions: Prisma.ScheduleWhereInput = andConditions.length > 0 ? {
-        AND: andConditions
-    } : {}
-
+    const whereConditions: Prisma.ScheduleWhereInput =
+      andConditions.length > 0
+        ? {
+            AND: andConditions,
+          }
+        : {};
 
     const doctorSchedules = await prisma.doctorSchedules.findMany({
-        where: {
-            doctor: {
-                email: user.email
-            }
+      where: {
+        doctor: {
+          email: user.email,
         },
-        select: {
-            scheduleId: true
-        }
+      },
+      select: {
+        scheduleId: true,
+      },
     });
 
-    const doctorScheduleIds = doctorSchedules.map(schedule => schedule.scheduleId);
+    const doctorScheduleIds = doctorSchedules.map(
+      (schedule) => schedule.scheduleId
+    );
 
     const result = await prisma.schedule.findMany({
-        where: {
-            ...whereConditions,
-            id: {
-                notIn: doctorScheduleIds
-            }
+      where: {
+        ...whereConditions,
+        id: {
+          notIn: doctorScheduleIds,
         },
-        skip,
-        take: limit,
-        orderBy: {
-            [sortBy]: sortOrder
-        }
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
     });
 
     const total = await prisma.schedule.count({
-        where: {
-            ...whereConditions,
-            id: {
-                notIn: doctorScheduleIds
-            }
-        }
+      where: {
+        ...whereConditions,
+        id: {
+          notIn: doctorScheduleIds,
+        },
+      },
     });
 
     return {
-        meta: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit)
-        },
-        data: result
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: result,
     };
-}
+  },
+
+  deleteSchedule: async (id: string) => {
+    const schedule = await prisma.schedule.findUnique( { where: { id } } );
+
+    if (!schedule) {
+      throw new AppError(StatusCodes.NOT_FOUND, "Schedule not found!")
+    }
+
+    await prisma.schedule.delete( { where: { id } } );
+
+
+    return null
+  }
 };

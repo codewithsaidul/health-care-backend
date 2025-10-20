@@ -21,7 +21,11 @@ export const ScheduleController = {
   ),
 
   schedulesForDoctor: catchAsync(
-    async (req: Request & { user?: IJWTPayload }, res: Response) => {
+    async (
+      req: Request & { user?: IJWTPayload },
+      res: Response,
+      next: NextFunction
+    ) => {
       const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
       const fillters = pick(req.query, ["startDateTime", "endDateTime"]);
 
@@ -33,11 +37,24 @@ export const ScheduleController = {
       );
 
       sendResponse(res, {
-        statusCode: 200,
+        statusCode: StatusCodes.OK,
         success: true,
         message: "Schedule fetched successfully!",
         meta: result.meta,
         data: result.data,
+      });
+    }
+  ),
+
+  deleteSchedule: catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      await ScheduleServices.deleteSchedule(req.params.scheduleId);
+
+      sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: "Schedule Deleted successfully!",
+        data: null,
       });
     }
   ),

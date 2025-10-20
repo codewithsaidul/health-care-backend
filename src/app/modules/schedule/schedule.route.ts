@@ -12,9 +12,11 @@ router.post("/create-schedule", checkAuth(UserRole.ADMIN), ScheduleController.cr
 
 router.get(
     "/getSchedules",
-    checkAuth(UserRole.DOCTOR, UserRole.DOCTOR),
+    checkAuth(UserRole.DOCTOR, UserRole.ADMIN),
     ScheduleController.schedulesForDoctor
 )
 
+
+router.delete("/deleteSchedule/:scheduleId", checkAuth(UserRole.ADMIN), ScheduleController.deleteSchedule)
 
 export const ScheduleRoutes = router
