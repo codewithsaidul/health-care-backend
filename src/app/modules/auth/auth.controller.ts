@@ -20,7 +20,11 @@ export const AuthController = {
             statusCode: 200,
             success: true,
             message: "Logged in successfull",
-            data: result
+            data: {
+                user: result,
+                accessToken,
+                refreshToken
+            }
         })
     })
 }
