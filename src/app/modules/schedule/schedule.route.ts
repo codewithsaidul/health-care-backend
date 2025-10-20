@@ -10,7 +10,11 @@ const router = Router();
 
 router.post("/create-schedule", checkAuth(UserRole.ADMIN), ScheduleController.createSchedule)
 
-
+router.get(
+    "/getSchedules",
+    checkAuth(UserRole.DOCTOR, UserRole.DOCTOR),
+    ScheduleController.schedulesForDoctor
+)
 
 
 export const ScheduleRoutes = router
