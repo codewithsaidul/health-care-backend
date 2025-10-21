@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+import { AppError } from "../errorHelper/AppError";
+import { StatusCodes } from "http-status-codes";
 dotenv.config();
 
 interface ENVCONFIG {
@@ -46,7 +48,7 @@ const loadEnvVariable = (): ENVCONFIG => {
 
   requiredEnvVariables.forEach((key) => {
     if (!process.env[key]) {
-      throw new Error(`Missing require environment variable ${key}`);
+      throw new AppError(StatusCodes.BAD_REQUEST, `Missing require environment variable ${key}`);
     }
   });
 
