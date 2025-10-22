@@ -15,4 +15,14 @@ export const SpecialtiesController = {
       data: result,
     });
   }),
+  getAllSpecialties: catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await SpecialtiesServices.getAllSpecialties;
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Specialties Retrived successfully!",
+      data: result,
+    });
+  }),
 };

@@ -8,4 +8,8 @@ export const SpecialtiesServices = {
 
     return result;
   },
+
+  getAllSpecialties: async () => {
+    return await prisma.specialties.findMany();
+  }
 };
