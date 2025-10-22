@@ -8,7 +8,8 @@ const router = Router();
 
 
 
-router.get("/getAllDoctor", DoctorController.getAllDoctor)
+router.get("/getAllDoctor", DoctorController.getAllDoctor);
+router.patch("/updateDoctor/:id", DoctorController.updateDoctor);
 
 
 export const DoctorRoutes = router

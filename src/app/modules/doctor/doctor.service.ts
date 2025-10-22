@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../../config/prismaInstance";
 import { IOptions, paginationHelper } from "../../utils/paginationHelper";
 import { doctorSearchableFields } from "./doctor.constant";
+import { IDoctorUpdateInput } from "./doctor.interface";
 
 export const DoctorServices = {
   getAllDoctor: async (filters: any, options: IOptions) => {
@@ -76,9 +77,67 @@ export const DoctorServices = {
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
       },
       data: result,
     };
+  },
+
+  updateDoctor: async (id: string, payload: Partial<IDoctorUpdateInput>) => {
+    const doctorInfo = await prisma.doctor.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+
+    const { specialties, ...doctorData } = payload;
+
+    return await prisma.$transaction(async (tnx) => {
+      if (specialties && specialties.length > 0) {
+        const deleteSpecialtyIds = specialties.filter(
+          (specialty) => specialty.isDeleted
+        );
+
+        for (const specialty of deleteSpecialtyIds) {
+          await tnx.doctorSpecialties.deleteMany({
+            where: {
+              doctorId: id,
+              specialitiesId: specialty.specialtyId,
+            },
+          });
+        }
+
+        const createSpecialtyIds = specialties.filter(
+          (specialty) => !specialty.isDeleted
+        );
+
+        for (const specialty of createSpecialtyIds) {
+          await tnx.doctorSpecialties.create({
+            data: {
+              doctorId: id,
+              specialitiesId: specialty.specialtyId,
+            },
+          });
+        }
+      }
+
+      const updatedData = await tnx.doctor.update({
+        where: {
+          id: doctorInfo.id,
+        },
+        data: doctorData,
+        include: {
+          DoctorSpecialties: {
+            include: {
+              specialities: true,
+            },
+          },
+        },
+
+        //  doctor - doctorSpecailties - specialities
+      });
+
+      return updatedData;
+    });
   },
 };
