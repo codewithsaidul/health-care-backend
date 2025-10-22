@@ -12,7 +12,7 @@ const router = Router();
 
 router.post("/create-specialties", validateRequest(addSpecialities), SpecialtiesController.createSpecialties)
 router.get("/getAllSpecialties", SpecialtiesController.getAllSpecialties)
-router.get("/deleteSpecialties/:id", checkAuth(UserRole.ADMIN), SpecialtiesController.deleteSpecialties)
+router.delete("/deleteSpecialties/:id", checkAuth(UserRole.ADMIN), SpecialtiesController.deleteSpecialties)
 
 
 export const SpecialtiesRoutes = router
