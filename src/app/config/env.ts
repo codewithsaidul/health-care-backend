@@ -20,6 +20,7 @@ interface ENVCONFIG {
     CLOUDINARY_API_SECRET: string;
   };
 
+  OPEN_ROUTER_API_KEY: string;
   // BCRYPT_SALT_ROUND: string;
   // ADMIN_EMAIL: string;
   // ADMIN_PASSWORD: string;
@@ -40,6 +41,8 @@ const loadEnvVariable = (): ENVCONFIG => {
     "CLOUDINARY_API_KEY",
     "CLOUDINARY_API_SECRET",
     "CLOUDINARY_URL",
+
+    "OPEN_ROUTER_API_KEY",
 
     // "BCRYPT_SALT_ROUND",
     // "ADMIN_EMAIL",
@@ -69,6 +72,8 @@ const loadEnvVariable = (): ENVCONFIG => {
       CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
       CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
     },
+
+    OPEN_ROUTER_API_KEY: process.env.OPEN_ROUTER_API_KEY as string
     // BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
     // ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
     // ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,

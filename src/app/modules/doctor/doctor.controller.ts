@@ -24,6 +24,20 @@ export const DoctorController = {
     }
   ),
 
+  getAiDoctorSuggestion: catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+
+      const result = await DoctorServices.getAiDoctorSuggestion(req.body);
+
+      sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: "Doctor Suggestion Retrived successfully!",
+        data: result
+      });
+    }
+  ),
+
   updateDoctor: catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
