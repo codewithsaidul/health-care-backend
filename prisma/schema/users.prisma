@@ -30,9 +30,9 @@ model Admin {
 }
 
 model Doctor {
-  id                 String            @id @default(uuid())
+  id                 String              @id @default(uuid())
   name               String
-  email              String            @unique
+  email              String              @unique
   profilePhoto       String?
   contactNumber      String
   address            String
@@ -43,13 +43,15 @@ model Doctor {
   qualification      String
   currentWorkPlace   String
   designation        String
-  isDeleted          Boolean           @default(false)
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
+  isDeleted          Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   DoctorSchedules    DoctorSchedules[]
-  DoctorSpecialties DoctorSpecialties[]
+  DoctorSpecialties  DoctorSpecialties[]
+  Appointment  Appointment[]
+  Prescription Prescription[]
 
-  user              User                @relation(fields: [email], references: [email])
+  user         User           @relation(fields: [email], references: [email])
 
   @@map("doctors")
 }
@@ -64,8 +66,10 @@ model Patient {
   isDeleted     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  Appointment  Appointment[]
+  Prescription Prescription[]
 
-  user User @relation(fields: [email], references: [email])
+  user         User           @relation(fields: [email], references: [email])
 
   @@map("patients")
 }
