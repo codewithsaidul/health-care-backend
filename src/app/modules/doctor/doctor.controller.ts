@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import catchAsync from "../../utils/catchAsync";
+import pick from "../../utils/pick";
+import { sendResponse } from "../../utils/sendResponse";
 import { doctorFilterableFields } from "./doctor.constant";
 import { DoctorServices } from "./doctor.service";
-import { sendResponse } from "../../utils/sendResponse";
-import pick from "../../utils/pick";
-import { StatusCodes } from "http-status-codes";
 
 export const DoctorController = {
   getAllDoctor: catchAsync(
@@ -26,14 +26,27 @@ export const DoctorController = {
 
   getAiDoctorSuggestion: catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-
       const result = await DoctorServices.getAiDoctorSuggestion(req.body);
 
       sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
         message: "Doctor Suggestion Retrived successfully!",
-        data: result
+        data: result,
+      });
+    }
+  ),
+
+  getSingleDoctor: catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { id } = req.params;
+      const result = await DoctorServices.getSingleDoctor(id);
+
+      sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: "Doctor  Retrived successfully!",
+        data: result,
       });
     }
   ),
@@ -48,6 +61,32 @@ export const DoctorController = {
         statusCode: StatusCodes.OK,
         success: true,
         message: "Doctor updated successfully!",
+        data: result,
+      });
+    }
+  ),
+
+  deleteDoctor: catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { id } = req.params;
+      const result = await DoctorServices.deleteDoctor(id);
+      sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: "Doctor deleted successfully",
+        data: result,
+      });
+    }
+  ),
+
+  softDelete: catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { id } = req.params;
+      const result = await DoctorServices.softDelete(id);
+      sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: "Doctor soft deleted successfully",
         data: result,
       });
     }
