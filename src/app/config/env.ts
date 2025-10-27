@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import { AppError } from "../errorHelper/AppError";
 import { StatusCodes } from "http-status-codes";
+import { AppError } from "../errorHelper/AppError";
 dotenv.config();
 
 interface ENVCONFIG {
@@ -23,6 +23,7 @@ interface ENVCONFIG {
   OPEN_ROUTER_API_KEY: string;
 
   STRIPE_SECRET_KEY: string;
+  STRIPE_WEBHOOK_SECRET: string;
   FRONTEND_URL: string;
   // BCRYPT_SALT_ROUND: string;
   // ADMIN_EMAIL: string;
@@ -48,6 +49,7 @@ const loadEnvVariable = (): ENVCONFIG => {
     "OPEN_ROUTER_API_KEY",
 
     "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
     "FRONTEND_URL",
 
     // "BCRYPT_SALT_ROUND",
@@ -57,7 +59,10 @@ const loadEnvVariable = (): ENVCONFIG => {
 
   requiredEnvVariables.forEach((key) => {
     if (!process.env[key]) {
-      throw new AppError(StatusCodes.BAD_REQUEST, `Missing require environment variable ${key}`);
+      throw new AppError(
+        StatusCodes.BAD_REQUEST,
+        `Missing require environment variable ${key}`
+      );
     }
   });
 
@@ -81,7 +86,8 @@ const loadEnvVariable = (): ENVCONFIG => {
 
     OPEN_ROUTER_API_KEY: process.env.OPEN_ROUTER_API_KEY as string,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
-    FRONTEND_URL: process.env.FRONTEND_URL as string
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET as string,
+    FRONTEND_URL: process.env.FRONTEND_URL as string,
     // BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
     // ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
     // ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
