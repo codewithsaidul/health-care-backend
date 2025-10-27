@@ -69,6 +69,11 @@ export const DoctorServices = {
             specialities: true,
           },
         },
+        DoctorSchedules: {
+          include: {
+            schedule: true
+          }
+        }
       },
     });
 
