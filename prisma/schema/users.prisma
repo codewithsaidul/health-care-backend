@@ -40,6 +40,7 @@ model Doctor {
   gender             Gender
   registrationNumber String
   appointmentFee     Int
+  averageRating      Float               @default(0)
   qualification      String
   currentWorkPlace   String
   designation        String
@@ -48,28 +49,32 @@ model Doctor {
   updatedAt          DateTime            @updatedAt
   DoctorSchedules    DoctorSchedules[]
   DoctorSpecialties  DoctorSpecialties[]
-  Appointment  Appointment[]
-  Prescription Prescription[]
+  Appointment        Appointment[]
+  Prescription       Prescription[]
+  Review             Review[]
 
-  user         User           @relation(fields: [email], references: [email])
+  user User @relation(fields: [email], references: [email])
 
   @@map("doctors")
 }
 
 model Patient {
-  id            String   @id @default(uuid())
-  name          String
-  email         String   @unique
-  profilePhoto  String?
-  contactNumber String
-  address       String
-  isDeleted     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  Appointment  Appointment[]
-  Prescription Prescription[]
+  id                String             @id @default(uuid())
+  name              String
+  email             String             @unique
+  profilePhoto      String?
+  contactNumber     String
+  address           String
+  isDeleted         Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  Appointment       Appointment[]
+  Prescription      Prescription[]
+  PatientHealthData PatientHealthData?
+  MedicalReport     MedicalReport[]
+  Review            Review[]
 
-  user         User           @relation(fields: [email], references: [email])
+  user User @relation(fields: [email], references: [email])
 
   @@map("patients")
 }

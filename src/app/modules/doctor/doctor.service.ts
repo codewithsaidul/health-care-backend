@@ -73,8 +73,9 @@ export const DoctorServices = {
           include: {
             schedule: true
           }
-        }
-      },
+        },
+        Review: true
+      }
     });
 
     const total = await prisma.doctor.count({
