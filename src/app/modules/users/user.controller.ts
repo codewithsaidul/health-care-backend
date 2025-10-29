@@ -5,6 +5,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import pick from "../../utils/pick";
 import { userFilterableFields } from "./user.constants";
+import { IJWTPayload } from "../../types/common.types";
 
 export const UserController = {
   createPatient: catchAsync(
@@ -57,4 +58,31 @@ export const UserController = {
       });
     }
   ),
+
+  getMyProfile: catchAsync(
+    async (req: Request & { user?: IJWTPayload }, res: Response) => {
+      const user = req.user;
+
+      const result = await UserServices.getMyProfile(user as IJWTPayload);
+
+      sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: "My profile data fetched!",
+        data: result,
+      });
+    }
+  ),
+
+  changeProfileStatus: catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await UserServices.changeProfileStatus(id, req.body);
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Users profile status changed!",
+      data: result,
+    });
+  }),
 };

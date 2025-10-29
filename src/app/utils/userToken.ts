@@ -7,9 +7,7 @@ import { AppError } from "../errorHelper/AppError";
 import { prisma } from "../config/prismaInstance";
 
 
-// This function creates a user token containing access and refresh tokens.
-// It takes a user object as input, extracts necessary information, and generates tokens using the provided secret and expiration time from environment variables.
-// The generated tokens are returned in an object.
+
 export const createUserToken = (user: Partial<Prisma.UserCreateInput>) => {
   const jwtPayload = {
     userId: user.id,
