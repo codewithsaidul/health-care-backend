@@ -1,16 +1,16 @@
-import { prisma } from "../../config/prismaInstance";
-import { IJWTPayload } from "../../types/common.types";
-import { v4 as uuidv4 } from "uuid";
-import { stripe } from "../../utils/stripe";
 import {
   AppointmentStatus,
   PaymentStatus,
   Prisma,
   UserRole,
 } from "@prisma/client";
-import { IOptions, paginationHelper } from "../../utils/paginationHelper";
-import { AppError } from "../../errorHelper/AppError";
 import { StatusCodes } from "http-status-codes";
+import { v4 as uuidv4 } from "uuid";
+import { prisma } from "../../config/prismaInstance";
+import { AppError } from "../../errorHelper/AppError";
+import { IJWTPayload } from "../../types/common.types";
+import { IOptions, paginationHelper } from "../../utils/paginationHelper";
+import { stripe } from "../../utils/stripe";
 
 export const AppointmentServices = {
   createAppointment: async (
@@ -105,22 +105,37 @@ export const AppointmentServices = {
   },
 
   getAllAppointment: async (filters: any, options: IOptions) => {
-    const { page, limit, skip, sortBy, sortOrder } =
-      paginationHelper.calculatePagination(options);
-    const { ...filterData } = filters;
+    const { limit, page, skip } = paginationHelper.calculatePagination(options);
+    const { patientEmail, doctorEmail, ...filterData } = filters;
+    const andConditions = [];
 
-    const andConditions: Prisma.AppointmentWhereInput[] = [];
-
-    if (Object.keys(filterData).length > 0) {
-      const filterConditions = Object.keys(filterData).map((key) => ({
-        [key]: {
-          equals: (filterData as any)[key],
+    if (patientEmail) {
+      andConditions.push({
+        patient: {
+          email: patientEmail,
         },
-      }));
-
-      andConditions.push(...filterConditions);
+      });
+    } else if (doctorEmail) {
+      andConditions.push({
+        doctor: {
+          email: doctorEmail,
+        },
+      });
     }
 
+    if (Object.keys(filterData).length > 0) {
+      andConditions.push({
+        AND: Object.keys(filterData).map((key) => {
+          return {
+            [key]: {
+              equals: (filterData as any)[key],
+            },
+          };
+        }),
+      });
+    }
+
+    // console.dir(andConditions, { depth: Infinity })
     const whereConditions: Prisma.AppointmentWhereInput =
       andConditions.length > 0 ? { AND: andConditions } : {};
 
@@ -128,12 +143,17 @@ export const AppointmentServices = {
       where: whereConditions,
       skip,
       take: limit,
-      orderBy: {
-        [sortBy]: sortOrder,
+      orderBy:
+        options.sortBy && options.sortOrder
+          ? { [options.sortBy]: options.sortOrder }
+          : {
+              createdAt: "desc",
+            },
+      include: {
+        doctor: true,
+        patient: true,
       },
-      include: { patient: true, doctor: true },
     });
-
     const total = await prisma.appointment.count({
       where: whereConditions,
     });
@@ -141,8 +161,8 @@ export const AppointmentServices = {
     return {
       meta: {
         total,
-        limit,
         page,
+        limit,
       },
       data: result,
     };

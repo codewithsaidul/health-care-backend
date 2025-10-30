@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import catchAsync from "../../utils/catchAsync";
-import { IJWTPayload } from "../../types/common.types";
-import { AppointmentServices } from "./appointment.service";
-import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
+import { IJWTPayload } from "../../types/common.types";
+import catchAsync from "../../utils/catchAsync";
 import pick from "../../utils/pick";
+import { sendResponse } from "../../utils/sendResponse";
+import { appointmentFilterableFields } from "./appointment.constants";
+import { AppointmentServices } from "./appointment.service";
 
 export const AppointmentController = {
   createAppointment: catchAsync(
@@ -35,9 +36,9 @@ export const AppointmentController = {
       next: NextFunction
     ) => {
       const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
-      const fillters = pick(req.query, ["status", "paymentStatus"]);
+      const filters = pick(req.query, appointmentFilterableFields);
       const result = await AppointmentServices.getAllAppointment(
-        fillters,
+        filters,
         options
       );
 
@@ -50,7 +51,7 @@ export const AppointmentController = {
     }
   ),
 
-    getMyAppointment: catchAsync(
+  getMyAppointment: catchAsync(
     async (
       req: Request & { user?: IJWTPayload },
       res: Response,
@@ -75,7 +76,11 @@ export const AppointmentController = {
   ),
 
   updateAppointmentStatus: catchAsync(
-    async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
+    async (
+      req: Request & { user?: IJWTPayload },
+      res: Response,
+      next: NextFunction
+    ) => {
       const { id } = req.params;
       const { status } = req.body;
       const user = req.user;
