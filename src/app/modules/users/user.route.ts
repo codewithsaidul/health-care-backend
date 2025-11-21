@@ -34,4 +34,7 @@ router.post(
   }
 );
 
+
+router.get("/getAllUsers", UserController.getAllUsers)
+
 export const UserRoutes = router;
