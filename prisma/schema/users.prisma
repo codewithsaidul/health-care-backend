@@ -30,9 +30,9 @@ model Admin {
 }
 
 model Doctor {
-  id                 String   @id @default(uuid())
+  id                 String              @id @default(uuid())
   name               String
-  email              String   @unique
+  email              String              @unique
   profilePhoto       String?
   contactNumber      String
   address            String
@@ -40,12 +40,18 @@ model Doctor {
   gender             Gender
   registrationNumber String
   appointmentFee     Int
+  averageRating      Float               @default(0)
   qualification      String
   currentWorkPlace   String
   designation        String
-  isDeleted          Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  isDeleted          Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  DoctorSchedules    DoctorSchedules[]
+  DoctorSpecialties  DoctorSpecialties[]
+  Appointment        Appointment[]
+  Prescription       Prescription[]
+  Review             Review[]
 
   user User @relation(fields: [email], references: [email])
 
@@ -53,18 +59,22 @@ model Doctor {
 }
 
 model Patient {
-  id            String   @id @default(uuid())
-  name          String
-  email         String   @unique
-  profilePhoto  String?
-  contactNumber String
-  address       String
-  isDeleted     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String             @id @default(uuid())
+  name              String
+  email             String             @unique
+  profilePhoto      String?
+  contactNumber     String
+  address           String
+  isDeleted         Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  Appointment       Appointment[]
+  Prescription      Prescription[]
+  PatientHealthData PatientHealthData?
+  MedicalReport     MedicalReport[]
+  Review            Review[]
 
   user User @relation(fields: [email], references: [email])
 
   @@map("patients")
 }
-
