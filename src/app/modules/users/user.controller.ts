@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import catchAsync from "../../utils/catchAsync";
-import { UserServices } from "./user.service";
-import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
+import { IJWTPayload } from "../../types/common.types";
+import catchAsync from "../../utils/catchAsync";
 import pick from "../../utils/pick";
+import { sendResponse } from "../../utils/sendResponse";
 import { userFilterableFields } from "./user.constants";
+import { UserServices } from "./user.service";
 
 export const UserController = {
   createPatient: catchAsync(
@@ -57,4 +58,50 @@ export const UserController = {
       });
     }
   ),
+
+  getMyProfile: catchAsync(
+    async (req: Request & { user?: IJWTPayload }, res: Response) => {
+      const user = req.user;
+
+      const result = await UserServices.getMyProfile(user as IJWTPayload);
+
+      sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: "My profile data fetched!",
+        data: result,
+      });
+    }
+  ),
+
+  updateMyProfie: catchAsync(
+    async (req: Request & { user?: IJWTPayload }, res: Response) => {
+      const user = req.user;
+
+      const result = await UserServices.updateMyProfile(
+        user as IJWTPayload,
+        req.body,
+        req.file as Express.Multer.File
+      );
+
+      sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: "My profile updated!",
+        data: result,
+      });
+    }
+  ),
+
+  changeProfileStatus: catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await UserServices.changeProfileStatus(id, req.body);
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Users profile status changed!",
+      data: result,
+    });
+  }),
 };

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Doctor, Prisma, UserStatus } from "@prisma/client";
 import { prisma } from "../../config/prismaInstance";
 import { IOptions, paginationHelper } from "../../utils/paginationHelper";
 import { doctorSearchableFields } from "./doctor.constant";
@@ -69,7 +69,13 @@ export const DoctorServices = {
             specialities: true,
           },
         },
-      },
+        DoctorSchedules: {
+          include: {
+            schedule: true
+          }
+        },
+        Review: true
+      }
     });
 
     const total = await prisma.doctor.count({
@@ -103,7 +109,6 @@ export const DoctorServices = {
       },
     });
 
-
     const prompt = `
 You are a medical assistant AI. Based on the patient's symptoms, suggest the top 3 most suitable doctors.
 Each doctor has specialties and years of experience.
@@ -116,8 +121,6 @@ ${JSON.stringify(doctors, null, 2)}
 
 Return your response in JSON format with full individual doctor data. 
 `;
-
- 
 
     const completion = await openAi.chat.completions.create({
       model: "z-ai/glm-4.5-air:free",
@@ -134,7 +137,29 @@ Return your response in JSON format with full individual doctor data.
       ],
     });
 
-    const result = await extractJsonFromMessage(completion.choices[0].message)
+    const result = await extractJsonFromMessage(completion.choices[0].message);
+    return result;
+  },
+
+  getSingleDoctor: async (id: string): Promise<Doctor | null> => {
+    const result = await prisma.doctor.findUnique({
+      where: {
+        id,
+        isDeleted: false,
+      },
+      include: {
+        DoctorSpecialties: {
+          include: {
+            specialities: true,
+          },
+        },
+        DoctorSchedules: {
+          include: {
+            schedule: true,
+          },
+        },
+      },
+    });
     return result;
   },
 
@@ -193,6 +218,46 @@ Return your response in JSON format with full individual doctor data.
       });
 
       return updatedData;
+    });
+  },
+
+  deleteDoctor: async (id: string): Promise<Doctor> => {
+    return await prisma.$transaction(async (transactionClient) => {
+      const deleteDoctor = await transactionClient.doctor.delete({
+        where: {
+          id,
+        },
+      });
+
+      await transactionClient.user.delete({
+        where: {
+          email: deleteDoctor.email,
+        },
+      });
+
+      return deleteDoctor;
+    });
+  },
+
+  softDelete: async (id: string): Promise<Doctor> => {
+    return await prisma.$transaction(async (transactionClient) => {
+      const deleteDoctor = await transactionClient.doctor.update({
+        where: { id },
+        data: {
+          isDeleted: true,
+        },
+      });
+
+      await transactionClient.user.update({
+        where: {
+          email: deleteDoctor.email,
+        },
+        data: {
+          status: UserStatus.DELETED,
+        },
+      });
+
+      return deleteDoctor;
     });
   },
 };

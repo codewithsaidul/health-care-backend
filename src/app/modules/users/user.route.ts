@@ -1,6 +1,8 @@
+import { UserRole } from "@prisma/client";
 import { NextFunction, Request, Response, Router } from "express";
-import { UserController } from "./user.controller";
 import { fileUploader } from "../../helpers/fileUploader";
+import checkAuth from "../../middlewares/checkAuth";
+import { UserController } from "./user.controller";
 import {
   createAdminZodSchema,
   createDoctorZodSchema,
@@ -34,7 +36,27 @@ router.post(
   }
 );
 
+router.get("/getAllUsers", UserController.getAllUsers);
+router.get(
+  "/getMyProfile",
+  checkAuth(...Object.values(UserRole)),
+  UserController.getMyProfile
+);
 
-router.get("/getAllUsers", UserController.getAllUsers)
+router.patch(
+  "/update-my-profile",
+  checkAuth(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
+  fileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    return UserController.updateMyProfie(req, res, next);
+  }
+);
+
+router.patch(
+  "/:id/status",
+  checkAuth(UserRole.ADMIN),
+  UserController.changeProfileStatus
+);
 
 export const UserRoutes = router;

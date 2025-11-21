@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import { AppError } from "../errorHelper/AppError";
 import { StatusCodes } from "http-status-codes";
+import { AppError } from "../errorHelper/AppError";
 dotenv.config();
 
 interface ENVCONFIG {
@@ -12,6 +12,8 @@ interface ENVCONFIG {
     JWT_ACCESS_EXPIRATION_TIME: string;
     JWT_REFRESH_SECRET: string;
     JWT_REFRESH_EXPIRATION_TIME: string;
+    JWT_RESET_SECRET: string;
+    JWT_RESET_EXPIRE: string;
   };
 
   CLOUDINARY: {
@@ -21,6 +23,15 @@ interface ENVCONFIG {
   };
 
   OPEN_ROUTER_API_KEY: string;
+
+  STRIPE_SECRET_KEY: string;
+  STRIPE_WEBHOOK_SECRET: string;
+  FRONTEND_URL: string;
+
+  SMTP: {
+    SMTP_USER: string;
+    SMTP_PASS: string;
+  };
   // BCRYPT_SALT_ROUND: string;
   // ADMIN_EMAIL: string;
   // ADMIN_PASSWORD: string;
@@ -44,6 +55,15 @@ const loadEnvVariable = (): ENVCONFIG => {
 
     "OPEN_ROUTER_API_KEY",
 
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "FRONTEND_URL",
+
+    "SMTP_USER",
+    "SMTP_PASS",
+    "JWT_RESET_SECRET",
+    "JWT_RESET_EXPIRE",
+
     // "BCRYPT_SALT_ROUND",
     // "ADMIN_EMAIL",
     // "ADMIN_PASSWORD",
@@ -51,7 +71,10 @@ const loadEnvVariable = (): ENVCONFIG => {
 
   requiredEnvVariables.forEach((key) => {
     if (!process.env[key]) {
-      throw new AppError(StatusCodes.BAD_REQUEST, `Missing require environment variable ${key}`);
+      throw new AppError(
+        StatusCodes.BAD_REQUEST,
+        `Missing require environment variable ${key}`
+      );
     }
   });
 
@@ -66,6 +89,8 @@ const loadEnvVariable = (): ENVCONFIG => {
       JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
       JWT_REFRESH_EXPIRATION_TIME: process.env
         .JWT_REFRESH_EXPIRATION_TIME as string,
+      JWT_RESET_SECRET: process.env.JWT_RESET_SECRET as string,
+      JWT_RESET_EXPIRE: process.env.JWT_RESET_EXPIRE as string,
     },
     CLOUDINARY: {
       CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
@@ -73,7 +98,15 @@ const loadEnvVariable = (): ENVCONFIG => {
       CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
     },
 
-    OPEN_ROUTER_API_KEY: process.env.OPEN_ROUTER_API_KEY as string
+    OPEN_ROUTER_API_KEY: process.env.OPEN_ROUTER_API_KEY as string,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET as string,
+    FRONTEND_URL: process.env.FRONTEND_URL as string,
+
+    SMTP: {
+      SMTP_USER: process.env.SMTP_USER as string,
+      SMTP_PASS: process.env.SMTP_PASS as string,
+    },
     // BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
     // ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
     // ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
